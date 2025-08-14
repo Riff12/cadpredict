@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <title>Prediksi Penyakit Arteri Koroner (CAD) - Model ML Klasik</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .header-gradient {
+        background: linear-gradient(to right, #8F5099, #CB8ED6);
+        color: white;
+        }
+        .full-height {
+            min-height: 100vh;
+        }
+        .accordion-item {
+            background-color: #FFFFFF;
+            border: 1px solid #cb9ad4; /* Sesuaikan border agar matching */
+        }
+        .accordion-button {
+            background-color: #CB8ED6 !important; /* Override default Bootstrap */
+            color: white; /* Teks putih untuk kontras */
+        }
+        .accordion-button:not(.collapsed) {
+            background-color: #A77BBF; /* Warna saat terbuka, sedikit lebih gelap */
+            color: white;
+        }
+        .accordion-button:focus {
+            box-shadow: 0 0 0 0.2rem rgba(203, 142, 214, 0.5); /* Focus ring matching */
+        }
+        .accordion-body .row {
+            margin: 0 -0.5rem;
+        }
+        .accordion-body .col {
+            padding: 0 0.5rem;
+        }
+        .form-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .prediction-button-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .btn-gradient {
+        background: linear-gradient(to right, #8F5099, #CB8ED6);
+        color: white;
+        border: none;
+        font-weight: 500;
+        padding: 10px 24px;
+        border-radius: 6px;
+        transition: 0.3s ease-in-out;
+        }
+        .btn-gradient:hover {
+            filter: brightness(1.1);
+        }
+        .btn-gradient-header:hover {
+        filter: brightness(1.1);
+        }
+    </style>
+</head>
+<body class="full-height">
+    <!-- HEADER -->
+    <header class="p-3 header-gradient">
+        <div class="container-fluid">
+            <div class="d-flex flex-wrap align-items-center justify-content-between">
+                <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+                    <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"/></svg>
+                    <span class="fs-4">Arteriku</span>
+                </a>
+                <ul class="nav col-12 col-lg-auto mb-2 justify-content-center mb-md-0">
+                    <li><a href="/" class="btn btn-gradient-header">Home</a></li>
+                    <li><a href="/predict" class="btn btn-gradient-header">Mulai</a></li>
+                    <li><a href="/data_pasien" class="btn btn-gradient-header">Data Pasien</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <main class="container-fluid mt-3">
+        <h2 class="text-center">Prediksi Penyakit Arteri Koroner (CAD)</h2>
+        <p class="text-center">Silakan lengkapi data pasien di bawah ini untuk memulai prediksi penyakit arteri koroner (CAD).</p>
+        <div class="form-container">
+            <form method="POST" class="mt-4">
+                <div class="accordion" id="accordionPanels">
+                    <!-- Panel 1: Demografi -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="panelsDemografi">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsDemografiContent" aria-expanded="true" aria-controls="panelsDemografiContent">
+                                Demografi
+                            </button>
+                        </h2>
+                        <div id="panelsDemografiContent" class="accordion-collapse collapse show" aria-labelledby="panelsDemografi">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-12 col-md-6">
+                                        <div class="mb-3"><label>Age</label><input type="number" name="Age" class="form-control" required></div>
+                                        <div class="mb-3"><label>Weight</label><input type="number" step="0.01" name="Weight" class="form-control" required></div>
+                                        <div class="mb-3"><label>Length</label><input type="number" step="0.01" name="Length" class="form-control" required></div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <div class="mb-3"><label>BMI</label><input type="number" step="0.01" name="BMI" class="form-control" required></div>
+                                        <div class="mb-3"><label>Sex</label>
+                                            <select name="Sex" class="form-control" required>
+                                                <option value="Male">Male</option>
+                                                <option value="Fmale">Fmale</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel 2: Riwayat Kesehatan -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="panelsRiwayat">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsRiwayatContent" aria-expanded="false" aria-controls="panelsRiwayatContent">
+                                Riwayat Kesehatan
+                            </button>
+                        </h2>
+                        <div id="panelsRiwayatContent" class="accordion-collapse collapse" aria-labelledby="panelsRiwayat">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-12 col-md-6">
+                                        <div class="mb-3"><label>DM (0/1)</label><input type="number" name="DM" class="form-control" required></div>
+                                        <div class="mb-3"><label>HTN (0/1)</label><input type="number" name="HTN" class="form-control" required></div>
+                                        <div class="mb-3"><label>Current Smoker (0/1)</label><input type="number" name="Current Smoker" class="form-control" required></div>
+                                        <div class="mb-3"><label>EX-Smoker (0/1)</label><input type="number" name="EX-Smoker" class="form-control" required></div>
+                                        <div class="mb-3"><label>FH (0/1)</label><input type="number" name="FH" class="form-control" required></div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <div class="mb-3"><label>Obesity</label>
+                                            <select name="Obesity" class="form-control" required>
+                                                <option value="Y">Y</option>
+                                                <option value="N">N</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3"><label>CRF</label>
+                                            <select name="CRF" class="form-control" required>
+                                                <option value="Y">Y</option>
+                                                <option value="N">N</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3"><label>CVA</label>
+                                            <select name="CVA" class="form-control" required>
+                                                <option value="Y">Y</option>
+                                                <option value="N">N</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3"><label>Airway disease</label>
+                                            <select name="Airway disease" class="form-control" required>
+                                                <option value="Y">Y</option>
+                                                <option value="N">N</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3"><label>Thyroid Disease</label>
+                                            <select name="Thyroid Disease" class="form-control" required>
+                                                <option value="Y">Y</option>
+                                                <option value="N">N</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3"><label>CHF</label>
+                                            <select name="CHF" class="form-control" required>
+                                                <option value="Y">Y</option>
+                                                <option value="N">N</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3"><label>DLP</label>
+                                            <select name="DLP" class="form-control" required>
+                                                <option value="Y">Y</option>
+                                                <option value="N">N</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel 3: Gejala dan Pemeriksaan Fisik -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="panelsGejala">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsGejalaContent" aria-expanded="false" aria-controls="panelsGejalaContent">
+                                Gejala dan Pemeriksaan Fisik
+                            </button>
+                        </h2>
+                        <div id="panelsGejalaContent" class="accordion-collapse collapse" aria-labelledby="panelsGejala">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-12 col-md-6">
+                                        <div class="mb-3"><label>BP</label><input type="number" step="0.01" name="BP" class="form-control" required></div>
+                                        <div class="mb-3"><label>PR</label><input type="number" name="PR" class="form-control" required></div>
+                                        <div class="mb-3"><label>Edema (0/1)</label><input type="number" name="Edema" class="form-control" required></div>
+                                        <div class="mb-3"><label>Weak Peripheral Pulse</label>
+                                            <select name="Weak Peripheral Pulse" class="form-control" required>
+                                                <option value="Y">Y</option>
+                                                <option value="N">N</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3"><label>Lung rales</label>
+                                            <select name="Lung rales" class="form-control" required>
+                                                <option value="Y">Y</option>
+                                                <option value="N">N</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3"><label>Systolic Murmur</label>
+                                            <select name="Systolic Murmur" class="form-control" required>
+                                                <option value="Y">Y</option>
+                                                <option value="N">N</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3"><label>Diastolic Murmur</label>
+                                            <select name="Diastolic Murmur" class="form-control" required>
+                                                <option value="Y">Y</option>
+                                                <option value="N">N</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3"><label>Typical Chest Pain (0/1)</label><input type="number" name="Typical Chest Pain" class="form-control" required></div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <div class="mb-3"><label>Dyspnea</label>
+                                            <select name="Dyspnea" class="form-control" required>
+                                                <option value="Y">Y</option>
+                                                <option value="N">N</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3"><label>Function Class</label><input type="number" name="Function Class" class="form-control" required></div>
+                                        <div class="mb-3"><label>Atypical</label>
+                                            <select name="Atypical" class="form-control" required>
+                                                <option value="Y">Y</option>
+                                                <option value="N">N</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3"><label>Nonanginal</label>
+                                            <select name="Nonanginal" class="form-control" required>
+                                                <option value="Y">Y</option>
+                                                <option value="N">N</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3"><label>Exertional CP</label>
+                                            <select name="Exertional CP" class="form-control" required>
+                                                <option value="Y">Y</option>
+                                                <option value="N">N</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3"><label>LowTH Ang</label>
+                                            <select name="LowTH Ang" class="form-control" required>
+                                                <option value="Y">Y</option>
+                                                <option value="N">N</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel 4: Elektrokardiogram -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="panelsEKG">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsEKGContent" aria-expanded="false" aria-controls="panelsEKGContent">
+                                Elektrokardiogram
+                            </button>
+                        </h2>
+                        <div id="panelsEKGContent" class="accordion-collapse collapse" aria-labelledby="panelsEKG">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-12 col-md-6">
+                                        <div class="mb-3"><label>Q Wave (0/1)</label><input type="number" name="Q Wave" class="form-control" required></div>
+                                        <div class="mb-3"><label>St Elevation (0/1)</label><input type="number" name="St Elevation" class="form-control" required></div>
+                                        <div class="mb-3"><label>St Depression (0/1)</label><input type="number" name="St Depression" class="form-control" required></div>
+                                        <div class="mb-3"><label>Tinversion (0/1)</label><input type="number" name="Tinversion" class="form-control" required></div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <div class="mb-3"><label>LVH</label>
+                                            <select name="LVH" class="form-control" required>
+                                                <option value="Y">Y</option>
+                                                <option value="N">N</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3"><label>Poor R Progression</label>
+                                            <select name="Poor R Progression" class="form-control" required>
+                                                <option value="Y">Y</option>
+                                                <option value="N">N</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3"><label>Region RWMA (0/1)</label><input type="number" name="Region RWMA" class="form-control" required></div>
+                                        <div class="mb-3"><label>VHD</label>
+                                            <select name="VHD" class="form-control" required>
+                                                <option value="N">N</option>
+                                                <option value="mild">mild</option>
+                                                <option value="Moderate">Moderate</option>
+                                                <option value="Severe">Severe</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel 5: Laboratorium -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="panelsLab">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsLabContent" aria-expanded="false" aria-controls="panelsLabContent">
+                                Laboratorium
+                            </button>
+                        </h2>
+                        <div id="panelsLabContent" class="accordion-collapse collapse" aria-labelledby="panelsLab">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <div class="col-12 col-md-6">
+                                        <div class="mb-3"><label>FBS</label><input type="number" step="0.01" name="FBS" class="form-control" required></div>
+                                        <div class="mb-3"><label>CR</label><input type="number" step="0.01" name="CR" class="form-control" required></div>
+                                        <div class="mb-3"><label>TG</label><input type="number" step="0.01" name="TG" class="form-control" required></div>
+                                        <div class="mb-3"><label>LDL</label><input type="number" step="0.01" name="LDL" class="form-control" required></div>
+                                        <div class="mb-3"><label>HDL</label><input type="number" step="0.01" name="HDL" class="form-control" required></div>
+                                        <div class="mb-3"><label>BUN</label><input type="number" step="0.01" name="BUN" class="form-control" required></div>
+                                        <div class="mb-3"><label>ESR</label><input type="number" step="0.01" name="ESR" class="form-control" required></div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <div class="mb-3"><label>HB</label><input type="number" step="0.01" name="HB" class="form-control" required></div>
+                                        <div class="mb-3"><label>K</label><input type="number" step="0.01" name="K" class="form-control" required></div>
+                                        <div class="mb-3"><label>Na</label><input type="number" step="0.01" name="Na" class="form-control" required></div>
+                                        <div class="mb-3"><label>WBC</label><input type="number" name="WBC" class="form-control" required></div>
+                                        <div class="mb-3"><label>Lymph</label><input type="number" name="Lymph" class="form-control" required></div>
+                                        <div class="mb-3"><label>Neut</label><input type="number" name="Neut" class="form-control" required></div>
+                                        <div class="mb-3"><label>PLT</label><input type="number" name="PLT" class="form-control" required></div>
+                                        <div class="mb-3"><label>EF-TTE</label><input type="number" name="EF-TTE" class="form-control" required></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="prediction-button-container">
+                    <button type="submit" class="btn-gradient">Prediksi</button>
+                </div>
+            </form>
+        </div>
+
+        {% if prediction %}
+        <div class="mt-4 alert alert-info text-center">
+            <strong>Hasil Prediksi:</strong> {{ prediction }} (Probabilitas Cad: {{ probability|round(2) }}%)
+        </div>
+        {% endif %}
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

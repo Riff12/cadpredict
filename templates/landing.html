@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Arteriku - Prediksi CAD</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+    body, html {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        /* Hapus overflow: hidden agar konten bisa scroll jika perlu */
+    }
+    header {
+        height: 70px;
+    }
+    .header-gradient {
+        background: linear-gradient(to right, #8F5099, #CB8ED6);
+        color: white;
+    }
+    .main-section {
+        height: calc(100vh - 60px);
+        display: flex;
+        align-items: center;
+        padding: 0 3vw;
+    }
+    .main-section img {
+        max-height: 70vh;
+        width: 100%;
+        max-width: 100%;
+        object-fit: fill;
+    }
+    .hero-text h1 {
+        font-size: 2.2rem;
+        font-weight: 700;
+    }
+    .hero-text p {
+        font-size: 1rem;
+    }
+    .hero-text ul {
+        list-style: none;
+        padding-left: 0;
+        margin-top: 20px;
+    }
+    .hero-text li {
+        margin-bottom: 10px;
+        font-size: 1rem;
+        color: #555;
+    }
+    .hero-text li:before {
+        content: "✓ ";
+        color: #28a745;
+        margin-right: 10px;
+    }
+    @media (max-width: 768px) {
+        body {
+            overflow: auto;
+        }
+        .main-section {
+            flex-direction: column-reverse;
+            text-align: center;
+            height: auto;
+            padding: 1.5rem;
+        }
+        .main-section img {
+            max-height: 35vh;
+        }
+    }
+    .btn-gradient {
+        background: linear-gradient(to right, #8F5099, #CB8ED6);
+        color: white;
+        border: none;
+        font-weight: 500;
+        padding: 10px 24px;
+        border-radius: 6px;
+        transition: 0.3s ease-in-out;
+    }
+    .btn-gradient-header:hover {
+        filter: brightness(1.1);
+    }
+    </style>
+  </head>
+  <body>
+
+    <!-- HEADER -->
+    <header class="p-3 header-gradient">
+      <div class="container-fluid">
+        <div class="d-flex flex-wrap align-items-center justify-content-between">
+          <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+            <span class="fs-4">Arteriku</span>
+          </a>
+            <ul class="nav col-12 col-lg-auto mb-2 justify-content-center mb-md-0">
+                <li><a href="/" class="btn btn-gradient-header">Home</a></li>
+                <li><a href="/predict" class="btn btn-gradient-header">Mulai</a></li>
+                <li><a href="/data_pasien" class="btn btn-gradient-header">Data Pasien</a></li>
+            </ul>
+        </div>
+      </div>
+    </header>
+
+    <!-- HERO -->
+    <div class="main-section">
+    <div class="row w-100 align-items-center">
+        <div class="col-lg-6 hero-text pe-lg-5">
+        <h1>Prediksi Penyakit Arteri Koroner Secara Cepat & Akurat</h1>
+        <p>Gunakan teknologi machine learning untuk membantu mengenali risiko penyakit arteri koroner secara cepat dan akurat.</p>
+        <a href="/predict" class="btn btn-gradient">Mulai Pemeriksaan</a>
+        <h3 class="mt-4">Kenapa Pilih Arteriku?</h3>
+        <ul>
+            <li>Didukung dengan machine learning</li>
+            <li>Gratis, mudah dan cepat</li>
+            <li>Hasil jelas</li>
+        </ul>
+        </div>
+        <div class="col-lg-6 ps-lg-0">
+        <img src="{{ url_for('static', filename='dokter.svg') }}" class="img-fluid" alt="Dokter" loading="lazy">
+        </div>
+    </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

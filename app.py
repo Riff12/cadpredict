@@ -5,16 +5,33 @@ import joblib
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from io import BytesIO
+import json
+import logging
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key'  # Diperlukan untuk session
+logging.basicConfig(level=logging.DEBUG)
 
 # Load model dan preprocessor (baseline ML klasik untuk perbandingan dengan quantum)
-model = joblib.load('stack_model.joblib')
-preprocessor = joblib.load('preprocessor.joblib')
+try:
+    model = joblib.load('stack_model.joblib')
+    preprocessor = joblib.load('preprocessor.joblib')
+except Exception as e:
+    logging.error(f"Error loading model/preprocessor: {e}")
+    raise
 
-# Riwayat data pasien (list sederhana untuk demo; gunakan DB untuk real)
-patient_data = []
+def load_patient_data():
+    try:
+        with open('patient_data.json', 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return []
+
+def save_patient_data(data):
+    with open('patient_data.json', 'w') as f:
+        json.dump(data, f)
+
+patient_data = load_patient_data()
 
 @app.route('/', methods=['GET'])
 def landing():
@@ -23,86 +40,91 @@ def landing():
 @app.route('/predict', methods=['GET', 'POST'])
 def predict():
     if request.method == 'POST':
-        # Ambil input dari form (semua 54 fitur dari dataset CAD.csv)
-        data = {
-            'Age': [int(request.form['Age'])],
-            'Weight': [float(request.form['Weight'])],
-            'Length': [float(request.form['Length'])],
-            'Sex': [request.form['Sex']],
-            'BMI': [float(request.form['BMI'])],
-            'DM': [int(request.form['DM'])],
-            'HTN': [int(request.form['HTN'])],
-            'Current Smoker': [int(request.form['Current Smoker'])],
-            'EX-Smoker': [int(request.form['EX-Smoker'])],
-            'FH': [int(request.form['FH'])],
-            'Obesity': [request.form['Obesity']],
-            'CRF': [request.form['CRF']],
-            'CVA': [request.form['CVA']],
-            'Airway disease': [request.form['Airway disease']],
-            'Thyroid Disease': [request.form['Thyroid Disease']],
-            'CHF': [request.form['CHF']],
-            'DLP': [request.form['DLP']],
-            'BP': [float(request.form['BP'])],
-            'PR': [int(request.form['PR'])],
-            'Edema': [int(request.form['Edema'])],
-            'Weak Peripheral Pulse': [request.form['Weak Peripheral Pulse']],
-            'Lung rales': [request.form['Lung rales']],
-            'Systolic Murmur': [request.form['Systolic Murmur']],
-            'Diastolic Murmur': [request.form['Diastolic Murmur']],
-            'Typical Chest Pain': [int(request.form['Typical Chest Pain'])],
-            'Dyspnea': [request.form['Dyspnea']],
-            'Function Class': [int(request.form['Function Class'])],
-            'Atypical': [request.form['Atypical']],
-            'Nonanginal': [request.form['Nonanginal']],
-            'Exertional CP': [request.form['Exertional CP']],
-            'LowTH Ang': [request.form['LowTH Ang']],
-            'Q Wave': [int(request.form['Q Wave'])],
-            'St Elevation': [int(request.form['St Elevation'])],
-            'St Depression': [int(request.form['St Depression'])],
-            'Tinversion': [int(request.form['Tinversion'])],
-            'LVH': [request.form['LVH']],
-            'Poor R Progression': [request.form['Poor R Progression']],
-            'FBS': [float(request.form['FBS'])],
-            'CR': [float(request.form['CR'])],
-            'TG': [float(request.form['TG'])],
-            'LDL': [float(request.form['LDL'])],
-            'HDL': [float(request.form['HDL'])],
-            'BUN': [float(request.form['BUN'])],
-            'ESR': [float(request.form['ESR'])],
-            'HB': [float(request.form['HB'])],
-            'K': [float(request.form['K'])],
-            'Na': [float(request.form['Na'])],
-            'WBC': [int(request.form['WBC'])],
-            'Lymph': [int(request.form['Lymph'])],
-            'Neut': [int(request.form['Neut'])],
-            'PLT': [int(request.form['PLT'])],
-            'EF-TTE': [int(request.form['EF-TTE'])],
-            'Region RWMA': [int(request.form['Region RWMA'])],
-            'VHD': [request.form['VHD']]
-        }
+        try:
+            # Ambil input dari form (semua 54 fitur dari dataset CAD.csv)
+            data = {
+                'Age': [int(request.form['Age'])],
+                'Weight': [float(request.form['Weight'])],
+                'Length': [float(request.form['Length'])],
+                'Sex': [request.form['Sex']],
+                'BMI': [float(request.form['BMI'])],
+                'DM': [int(request.form['DM'])],
+                'HTN': [int(request.form['HTN'])],
+                'Current Smoker': [int(request.form['Current Smoker'])],
+                'EX-Smoker': [int(request.form['EX-Smoker'])],
+                'FH': [int(request.form['FH'])],
+                'Obesity': [request.form['Obesity']],
+                'CRF': [request.form['CRF']],
+                'CVA': [request.form['CVA']],
+                'Airway disease': [request.form['Airway disease']],
+                'Thyroid Disease': [request.form['Thyroid Disease']],
+                'CHF': [request.form['CHF']],
+                'DLP': [request.form['DLP']],
+                'BP': [float(request.form['BP'])],
+                'PR': [int(request.form['PR'])],
+                'Edema': [int(request.form['Edema'])],
+                'Weak Peripheral Pulse': [request.form['Weak Peripheral Pulse']],
+                'Lung rales': [request.form['Lung rales']],
+                'Systolic Murmur': [request.form['Systolic Murmur']],
+                'Diastolic Murmur': [request.form['Diastolic Murmur']],
+                'Typical Chest Pain': [int(request.form['Typical Chest Pain'])],
+                'Dyspnea': [request.form['Dyspnea']],
+                'Function Class': [int(request.form['Function Class'])],
+                'Atypical': [request.form['Atypical']],
+                'Nonanginal': [request.form['Nonanginal']],
+                'Exertional CP': [request.form['Exertional CP']],
+                'LowTH Ang': [request.form['LowTH Ang']],
+                'Q Wave': [int(request.form['Q Wave'])],
+                'St Elevation': [int(request.form['St Elevation'])],
+                'St Depression': [int(request.form['St Depression'])],
+                'Tinversion': [int(request.form['Tinversion'])],
+                'LVH': [request.form['LVH']],
+                'Poor R Progression': [request.form['Poor R Progression']],
+                'FBS': [float(request.form['FBS'])],
+                'CR': [float(request.form['CR'])],
+                'TG': [float(request.form['TG'])],
+                'LDL': [float(request.form['LDL'])],
+                'HDL': [float(request.form['HDL'])],
+                'BUN': [float(request.form['BUN'])],
+                'ESR': [float(request.form['ESR'])],
+                'HB': [float(request.form['HB'])],
+                'K': [float(request.form['K'])],
+                'Na': [float(request.form['Na'])],
+                'WBC': [int(request.form['WBC'])],
+                'Lymph': [int(request.form['Lymph'])],
+                'Neut': [int(request.form['Neut'])],
+                'PLT': [int(request.form['PLT'])],
+                'EF-TTE': [int(request.form['EF-TTE'])],
+                'Region RWMA': [int(request.form['Region RWMA'])],
+                'VHD': [request.form['VHD']]
+            }
 
-        # Buat DataFrame dari input
-        input_df = pd.DataFrame(data)
+            # Buat DataFrame dari input
+            input_df = pd.DataFrame(data)
 
-        # Preprocess input
-        input_processed = preprocessor.transform(input_df)
+            # Preprocess input
+            input_processed = preprocessor.transform(input_df)
 
-        # Prediksi (baseline klasik)
-        prediction = model.predict(input_processed)[0]
-        prob = model.predict_proba(input_processed)[0][0] * 100  # Prob 'Cad' (kelas 0)
+            # Prediksi (baseline klasik)
+            prediction = model.predict(input_processed)[0]
+            prob = model.predict_proba(input_processed)[0][0] * 100  # Prob 'Cad' (kelas 0)
 
-        # Hasil
-        result = 'Cad (Penyakit Arteri Koroner)' if prediction == 0 else 'Normal'
+            # Hasil
+            result = 'Cad (Penyakit Arteri Koroner)' if prediction == 0 else 'Normal'
 
-        # Simpan ke session untuk PDF
-        session['result'] = result
-        session['prob'] = prob
+            # Simpan ke session untuk PDF
+            session['result'] = result
+            session['prob'] = prob
 
-        # Simpan ke riwayat data pasien untuk halaman Data Pasien
-        patient_data.append({**data, 'Prediction': result, 'Prob Cad': prob})
+            # Simpan ke riwayat data pasien untuk halaman Data Pasien
+            patient_data.append({**data, 'Prediction': result, 'Prob Cad': prob})
+            save_patient_data(patient_data)
 
-        # Render ke halaman result terpisah jika ada, atau index
-        return render_template('result.html')  # Ganti ke 'index.html' jika tidak ada result terpisah
+            # Render ke halaman result
+            return render_template('result.html')  
+        except Exception as e:
+            logging.error(f"Error in predict: {e}")
+            return "Terjadi kesalahan dalam prediksi. Cek log untuk detail.", 500
 
     return render_template('index.html')
 

@@ -8,11 +8,11 @@
     <style>
         /* Ensures table columns don't overflow */
         .header-gradient {
-        background: linear-gradient(to right, #8F5099, #CB8ED6);
-        color: white;
+            background: linear-gradient(to right, #8F5099, #CB8ED6);
+            color: white;
         }
         .btn-gradient-header:hover {
-        filter: brightness(1.1);
+            filter: brightness(1.1);
         }
         th, td {
             max-width: 200px; /* Adjust the width of the columns as necessary */
@@ -69,6 +69,7 @@
                         <th>Length</th>
                         <th>Sex</th>
                         <th>BMI</th>
+                        <th>DM</th> <!-- Perbaikan: Ganti HTN pertama dengan DM sesuai app.py -->
                         <th>HTN</th>
                         <th>Current Smoker</th>
                         <th>EX-Smoker</th>
@@ -90,7 +91,6 @@
                         <th>Typical Chest Pain</th>
                         <th>Dyspnea</th>
                         <th>Function Class</th>
-                        <th>HTN</th>
                         <th>Atypical</th>
                         <th>Nonanginal</th>
                         <th>Exertional CP</th>
@@ -116,73 +116,77 @@
                         <th>Neut</th>
                         <th>PLT</th>
                         <th>EF-TTE</th>
-                        <th>region RWMA</th>
+                        <th>Region RWMA</th>
                         <th>VHD</th>
                         <th>Prediction</th>
                         <th>Prob Cad (%)</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for data in patient_data %}
-                    <tr>
-                        <td>{{ data['Age'][0] }}</td>
-                        <td>{{ data['Weight'][0] }}</td>
-                        <td>{{ data['length'][0] }}</td>
-                        <td>{{ data['Sex'][0] }}</td>
-                        <td>{{ data['BMI'][0] }}</td>
-                        <td>{{ data['HTN'][0] }}</td>
-                        <td>{{ data['Current Smoker'][0] }}</td>
-                        <td>{{ data['EX-Smoker'][0] }}</td>
-                        <td>{{ data['FH'][0] }}</td>
-                        <td>{{ data['Obesity'][0] }}</td>
-                        <td>{{ data['CRF'][0] }}</td>
-                        <td>{{ data['CVA'][0] }}</td>
-                        <td>{{ data['Airway disease'][0] }}</td>
-                        <td>{{ data['Thyroid Disease'][0] }}</td>
-                        <td>{{ data['CHF'][0] }}</td>
-                        <td>{{ data['DLP'][0] }}</td>
-                        <td>{{ data['BP'][0] }}</td>
-                        <td>{{ data['PR'][0] }}</td>
-                        <td>{{ data['Edema'][0] }}</td>
-                        <td>{{ data['Weak Peripheral Pulse'][0] }}</td>
-                        <td>{{ data['Lung rales'][0] }}</td>
-                        <td>{{ data['Systolic Murmur'][0] }}</td>
-                        <td>{{ data['Diastolic Murmur'][0] }}</td>
-                        <td>{{ data['Typical Chest Pain'][0] }}</td>
-                        <td>{{ data['Dyspnea'][0] }}</td>
-                        <td>{{ data['Function Class'][0] }}</td>
-                        <td>{{ data['HTN'][0] }}</td>
-                        <td>{{ data['Atypical'][0] }}</td>
-                        <td>{{ data['Nonanginal'][0] }}</td>
-                        <td>{{ data['Exertional CP'][0] }}</td>
-                        <td>{{ data['LowTH Ang'][0] }}</td>
-                        <td>{{ data['Q Wave'][0] }}</td>
-                        <td>{{ data['St Elevation'][0] }}</td>
-                        <td>{{ data['St Depression'][0] }}</td>
-                        <td>{{ data['Tinversion'][0] }}</td>
-                        <td>{{ data['LVH'][0] }}</td>
-                        <td>{{ data['Poor R Progression'][0] }}</td>
-                        <td>{{ data['FBS'][0] }}</td>
-                        <td>{{ data['CR'][0] }}</td>
-                        <td>{{ data['TG'][0] }}</td>
-                        <td>{{ data['LDL'][0] }}</td>
-                        <td>{{ data['HDL'][0] }}</td>
-                        <td>{{ data['BUN'][0] }}</td>
-                        <td>{{ data['ESR'][0] }}</td>
-                        <td>{{ data['HB'][0] }}</td>
-                        <td>{{ data['K'][0] }}</td>
-                        <td>{{ data['Na'][0] }}</td>
-                        <td>{{ data['WBC'][0] }}</td>
-                        <td>{{ data['Lymph'][0] }}</td>
-                        <td>{{ data['Neut'][0] }}</td>
-                        <td>{{ data['PLT'][0] }}</td>
-                        <td>{{ data['EF-TTE'][0] }}</td>
-                        <td>{{ data['region RWMA'][0] }}</td>
-                        <td>{{ data['VHD'][0] }}</td>
-                        <td>{{ data['Prediction'] }}</td>
-                        <td>{{ data['Prob Cad'] | round(2) }}</td>
-                    </tr>
-                    {% endfor %}
+                    {% if patient_data %}
+                        {% for data in patient_data %}
+                        <tr>
+                            <td>{{ data['Age'][0] if data['Age'] else 'N/A' }}</td>
+                            <td>{{ data['Weight'][0] if data['Weight'] else 'N/A' }}</td>
+                            <td>{{ data['Length'][0] if data['Length'] else 'N/A' }}</td>
+                            <td>{{ data['Sex'][0] if data['Sex'] else 'N/A' }}</td>
+                            <td>{{ data['BMI'][0] if data['BMI'] else 'N/A' }}</td>
+                            <td>{{ data['DM'][0] if data['DM'] else 'N/A' }}</td> <!-- Perbaikan: Ganti HTN dengan DM -->
+                            <td>{{ data['HTN'][0] if data['HTN'] else 'N/A' }}</td>
+                            <td>{{ data['Current Smoker'][0] if data['Current Smoker'] else 'N/A' }}</td>
+                            <td>{{ data['EX-Smoker'][0] if data['EX-Smoker'] else 'N/A' }}</td>
+                            <td>{{ data['FH'][0] if data['FH'] else 'N/A' }}</td>
+                            <td>{{ data['Obesity'][0] if data['Obesity'] else 'N/A' }}</td>
+                            <td>{{ data['CRF'][0] if data['CRF'] else 'N/A' }}</td>
+                            <td>{{ data['CVA'][0] if data['CVA'] else 'N/A' }}</td>
+                            <td>{{ data['Airway disease'][0] if data['Airway disease'] else 'N/A' }}</td>
+                            <td>{{ data['Thyroid Disease'][0] if data['Thyroid Disease'] else 'N/A' }}</td>
+                            <td>{{ data['CHF'][0] if data['CHF'] else 'N/A' }}</td>
+                            <td>{{ data['DLP'][0] if data['DLP'] else 'N/A' }}</td>
+                            <td>{{ data['BP'][0] if data['BP'] else 'N/A' }}</td>
+                            <td>{{ data['PR'][0] if data['PR'] else 'N/A' }}</td>
+                            <td>{{ data['Edema'][0] if data['Edema'] else 'N/A' }}</td>
+                            <td>{{ data['Weak Peripheral Pulse'][0] if data['Weak Peripheral Pulse'] else 'N/A' }}</td>
+                            <td>{{ data['Lung rales'][0] if data['Lung rales'] else 'N/A' }}</td>
+                            <td>{{ data['Systolic Murmur'][0] if data['Systolic Murmur'] else 'N/A' }}</td>
+                            <td>{{ data['Diastolic Murmur'][0] if data['Diastolic Murmur'] else 'N/A' }}</td>
+                            <td>{{ data['Typical Chest Pain'][0] if data['Typical Chest Pain'] else 'N/A' }}</td>
+                            <td>{{ data['Dyspnea'][0] if data['Dyspnea'] else 'N/A' }}</td>
+                            <td>{{ data['Function Class'][0] if data['Function Class'] else 'N/A' }}</td>
+                            <td>{{ data['Atypical'][0] if data['Atypical'] else 'N/A' }}</td>
+                            <td>{{ data['Nonanginal'][0] if data['Nonanginal'] else 'N/A' }}</td>
+                            <td>{{ data['Exertional CP'][0] if data['Exertional CP'] else 'N/A' }}</td>
+                            <td>{{ data['LowTH Ang'][0] if data['LowTH Ang'] else 'N/A' }}</td>
+                            <td>{{ data['Q Wave'][0] if data['Q Wave'] else 'N/A' }}</td>
+                            <td>{{ data['St Elevation'][0] if data['St Elevation'] else 'N/A' }}</td>
+                            <td>{{ data['St Depression'][0] if data['St Depression'] else 'N/A' }}</td>
+                            <td>{{ data['Tinversion'][0] if data['Tinversion'] else 'N/A' }}</td>
+                            <td>{{ data['LVH'][0] if data['LVH'] else 'N/A' }}</td>
+                            <td>{{ data['Poor R Progression'][0] if data['Poor R Progression'] else 'N/A' }}</td>
+                            <td>{{ data['FBS'][0] if data['FBS'] else 'N/A' }}</td>
+                            <td>{{ data['CR'][0] if data['CR'] else 'N/A' }}</td>
+                            <td>{{ data['TG'][0] if data['TG'] else 'N/A' }}</td>
+                            <td>{{ data['LDL'][0] if data['LDL'] else 'N/A' }}</td>
+                            <td>{{ data['HDL'][0] if data['HDL'] else 'N/A' }}</td>
+                            <td>{{ data['BUN'][0] if data['BUN'] else 'N/A' }}</td>
+                            <td>{{ data['ESR'][0] if data['ESR'] else 'N/A' }}</td>
+                            <td>{{ data['HB'][0] if data['HB'] else 'N/A' }}</td>
+                            <td>{{ data['K'][0] if data['K'] else 'N/A' }}</td>
+                            <td>{{ data['Na'][0] if data['Na'] else 'N/A' }}</td>
+                            <td>{{ data['WBC'][0] if data['WBC'] else 'N/A' }}</td>
+                            <td>{{ data['Lymph'][0] if data['Lymph'] else 'N/A' }}</td>
+                            <td>{{ data['Neut'][0] if data['Neut'] else 'N/A' }}</td>
+                            <td>{{ data['PLT'][0] if data['PLT'] else 'N/A' }}</td>
+                            <td>{{ data['EF-TTE'][0] if data['EF-TTE'] else 'N/A' }}</td>
+                            <td>{{ data['Region RWMA'][0] if data['Region RWMA'] else 'N/A' }}</td>
+                            <td>{{ data['VHD'][0] if data['VHD'] else 'N/A' }}</td>
+                            <td>{{ data['Prediction'] if data['Prediction'] else 'N/A' }}</td>
+                            <td>{{ data['Prob Cad'] | round(2) if data['Prob Cad'] else 'N/A' }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr><td colspan="50" class="text-center">Tidak ada data pasien.</td></tr>
+                    {% endif %}
                 </tbody>
             </table>
         </div>
@@ -204,13 +208,13 @@
                 "lengthChange": false, // Disable changing rows per page
                 "responsive": true // Enable responsive table
             });
-        });
 
-        // Filter by fitur (contoh by Prediction)
-        document.getElementById('filterSelect').addEventListener('change', function() {
-            let filterValue = this.value;
-            let table = $('#patientTable').DataTable();
-            table.column(50).search(filterValue).draw();  // Assuming the Prediction column is at index 50
+            // Filter by fitur (contoh by Prediction)
+            document.getElementById('filterSelect').addEventListener('change', function() {
+                let filterValue = this.value;
+                let table = $('#patientTable').DataTable();
+                table.column(49).search(filterValue).draw();  // Perbaikan: Index 49 untuk kolom 'Prediction'
+            });
         });
     </script>
 </body>
